@@ -2,416 +2,537 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist Vistoria - Porto Mais</title>
-    <!-- Bibliotecas para PDF (Versões Estáveis) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#001a33">
+    <meta name="description" content="Checklist Volpini - App de Vistoria">
+    <title>Checklist Volpini</title>
+    
+    <!-- Biblioteca PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         :root {
-            --primary-color: #001a4d; /* Azul Porto Mais */
-            --secondary-color: #e63946; /* Vermelho detalhe */
-            --bg-color: #f4f4f9;
+            --primary: #d4af37; /* Dourado */
+            --dark: #001a33;    /* Azul Escuro */
+            --light: #f4f6f8;
+            --text: #333;
+            --border: #e0e0e0;
+            --success: #27ae60;
+            --danger: #e74c3c;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
-            color: #333;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--light);
+            color: var(--text);
+            padding: 15px;
+            padding-bottom: 40px;
         }
 
-        .container {
+        .app-container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
         }
 
-        /* HEADER / LOGO */
+        /* --- HEADER --- */
         .header {
-            text-align: center;
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-        }
-
-        .logo-text {
-            font-size: 38px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            line-height: 1;
-        }
-
-        .text-blue { color: var(--primary-color); }
-        .text-red { color: var(--secondary-color); }
-
-        .subtitle {
-            font-size: 16px;
-            color: #666;
-            margin-top: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* FORMULÁRIO */
-        .section-title {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 15px;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-top: 25px;
-            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--dark) 0%, #002b55 100%);
+            color: var(--primary);
+            padding: 25px 20px;
             display: flex;
             align-items: center;
+            gap: 20px;
+            border-bottom: 4px solid var(--primary);
         }
 
-        .row {
+        .logo-box {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
-        .col {
+        .logo-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        .header-info h1 { font-size: 24px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; color: white; }
+        .header-info p { font-size: 13px; opacity: 0.9; color: var(--primary); }
+        .header-sub { font-size: 12px; margin-top: 5px; opacity: 0.7; color: white; }
+
+        /* --- TABS --- */
+        .tabs {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tab-btn {
             flex: 1;
-            min-width: 200px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
+            padding: 15px;
+            border: none;
+            background: none;
             font-weight: 600;
-            font-size: 0.9em;
-            color: #444;
+            color: #666;
+            cursor: pointer;
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
         }
 
+        .tab-btn.active {
+            color: var(--dark);
+            border-bottom-color: var(--primary);
+            background: #fcfcfc;
+        }
+
+        /* --- CONTENT --- */
+        .tab-content { display: none; padding: 25px; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-header {
+            background: var(--light);
+            padding: 10px 15px;
+            border-left: 4px solid var(--primary);
+            font-weight: 700;
+            color: var(--dark);
+            margin: 25px 0 15px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
+        }
+        .section-header:first-of-type { margin-top: 0; }
+
+        /* --- FORMS --- */
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .full { grid-template-columns: 1fr; }
+
+        label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #555; }
+        
         input, select, textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box; /* Garante que padding não quebre largura */
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
             font-size: 14px;
+            background: #fff;
+            transition: 0.2s;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
-            background-color: #f0f8ff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
-        /* CHECKBOX GRIDS */
-        .checklist-grid {
+        textarea { min-height: 80px; resize: vertical; }
+
+        /* --- CHECKBOXES --- */
+        .checkbox-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 10px;
         }
 
-        .check-item {
-            background: #f9f9f9;
+        .cb-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             padding: 8px;
+            background: #f9f9f9;
             border-radius: 4px;
-            border: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-        }
-
-        .check-item input {
-            width: auto;
-            margin-right: 10px;
-        }
-
-        /* ASSINATURA */
-        .signature-box {
-            border: 2px dashed #ccc;
-            height: 100px;
-            margin-top: 10px;
-            border-radius: 5px;
-            position: relative;
-            background: #fff;
-        }
-        
-        .signature-canvas {
-            width: 100%;
-            height: 100%;
-            cursor: crosshair;
-        }
-
-        .clear-sig {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            background: #e63946;
-            color: white;
-            border: none;
-            padding: 3px 8px;
-            font-size: 11px;
+            border: 1px solid transparent;
             cursor: pointer;
-            border-radius: 3px;
         }
 
-        /* BOTÕES DE AÇÃO */
-        .actions {
-            margin-top: 40px;
-            text-align: center;
+        .cb-item:hover { background: #fff; border-color: var(--border); }
+        .cb-item input { width: 16px; height: 16px; margin: 0; }
+        .cb-item label { margin: 0; cursor: pointer; font-weight: 500; }
+
+        /* --- BUTTONS --- */
+        .actions-bar {
+            margin-top: 30px;
             display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        button {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        button:active { transform: scale(0.98); }
-
-        .btn-pdf {
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
         }
 
-        .btn-clear {
-            background-color: #6c757d;
-            color: white;
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s;
+            min-width: 120px;
         }
 
-        /* Ocultar botões na hora de gerar o PDF se usar print nativo */
-        @media print {
-            .actions { display: none; }
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; max-width: 100%; }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary { background: var(--primary); color: var(--dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: var(--dark); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: #666; }
+
+        /* --- HISTORY LIST --- */
+        .history-item {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-info h4 { color: var(--dark); font-size: 16px; margin-bottom: 4px; }
+        .history-info span { font-size: 12px; color: #777; background: #eee; padding: 2px 6px; border-radius: 4px; }
+        
+        /* --- ALERTS --- */
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+            text-align: center;
+        }
+        .alert.show { display: block; animation: slideDown 0.3s; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* --- PDF PRINT HELPERS --- */
+        .pdf-watermark { display: none; text-align: center; font-size: 10px; color: #999; margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; }
+
+        /* Esconde elementos ao gerar PDF */
+        .hide-on-pdf { } 
+
+        @media (max-width: 600px) {
+            .row { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; }
+            .actions-bar { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="conteudo-vistoria">
-        <!-- CABEÇALHO -->
+    <div class="app-container" id="appContainer">
+        <!-- HEADER -->
         <div class="header">
-            <div class="logo-text">
-                <span class="text-blue">PORTO</span><span class="text-red">MAIS</span>
+            <div class="logo-box">
+                <img src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/bbac6cb8-036e-4ce1-852d-e6c3397ecc20" alt="Volpini Logo">
             </div>
-            <div class="subtitle">Proteção Veicular Inteligente</div>
-            <div style="margin-top: 10px; font-weight: bold;">CHECKLIST DE VISTORIA E RECEBIMENTO</div>
-        </div>
-
-        <!-- DADOS DO CLIENTE -->
-        <div class="section-title">👤 Dados do Associado/Veículo</div>
-        <div class="row">
-            <div class="col">
-                <label>Nome do Associado:</label>
-                <input type="text" id="nome" placeholder="Nome completo">
-            </div>
-            <div class="col">
-                <label>Placa:</label>
-                <input type="text" id="placa" placeholder="ABC-1234" style="text-transform: uppercase;">
-            </div>
-        </div>
-        <div class="row" style="margin-top: 10px;">
-            <div class="col">
-                <label>Veículo/Modelo:</label>
-                <input type="text" id="modelo">
-            </div>
-            <div class="col">
-                <label>Data Vistoria:</label>
-                <input type="date" id="data">
+            <div class="header-info">
+                <h1>Checklist de Oficina</h1>
+                <p>Inspeção e Serviços Automotivos</p>
+                <div class="header-sub">R. D, 101 - Jardim Vera Cruz, Contagem - MG | (31) 99331-0800</div>
             </div>
         </div>
 
-        <!-- NÍVEL DE COMBUSTÍVEL -->
-        <div class="section-title">⛽ Nível de Combustível</div>
-        <div class="checklist-grid" style="grid-template-columns: repeat(5, 1fr);">
-            <div class="check-item"><input type="radio" name="fuel" value="Reserva"> Reserva</div>
-            <div class="check-item"><input type="radio" name="fuel" value="1/4"> 1/4</div>
-            <div class="check-item"><input type="radio" name="fuel" value="1/2" checked> 1/2</div>
-            <div class="check-item"><input type="radio" name="fuel" value="3/4"> 3/4</div>
-            <div class="check-item"><input type="radio" name="fuel" value="Cheio"> Cheio</div>
+        <!-- TABS -->
+        <div class="tabs hide-on-pdf">
+            <button class="tab-btn active" onclick="switchTab('novo')">➕ Novo</button>
+            <button class="tab-btn" onclick="switchTab('historico')">📋 Histórico</button>
         </div>
 
-        <!-- ITENS E ACESSÓRIOS -->
-        <div class="section-title">📋 Itens e Acessórios (Marque se tiver AVARIA/FALTA)</div>
-        <div class="checklist-grid">
-            <div class="check-item"><input type="checkbox"> Antena</div>
-            <div class="check-item"><input type="checkbox"> Chave de Roda</div>
-            <div class="check-item"><input type="checkbox"> Macaco</div>
-            <div class="check-item"><input type="checkbox"> Triângulo</div>
-            <div class="check-item"><input type="checkbox"> Estepe</div>
-            <div class="check-item"><input type="checkbox"> Manual</div>
-            <div class="check-item"><input type="checkbox"> Tapetes</div>
-            <div class="check-item"><input type="checkbox"> Extintor</div>
-            <div class="check-item"><input type="checkbox"> Calotas</div>
-            <div class="check-item"><input type="checkbox"> Rádio/Multimídia</div>
-        </div>
+        <!-- ABA: NOVO CHECKLIST -->
+        <div id="novo" class="tab-content active">
+            <div id="msgBox" class="alert"></div>
 
-        <!-- ESTADO DOS PNEUS -->
-        <div class="section-title">🚗 Estado dos Pneus</div>
-        <div class="row">
-            <div class="col">
-                <label>Dianteiros:</label>
-                <select>
-                    <option>Bons</option>
-                    <option>Meia Vida</option>
-                    <option>Ruins/Carecas</option>
-                </select>
+            <form id="checklistForm">
+                <!-- CLIENTE -->
+                <div class="section-header">👤 DADOS DO CLIENTE</div>
+                <div class="row">
+                    <div>
+                        <label>Nome do Cliente *</label>
+                        <input type="text" id="nome" required placeholder="Ex: João da Silva">
+                    </div>
+                    <div>
+                        <label>Telefone / Celular</label>
+                        <input type="tel" id="telefone" placeholder="(31) 99999-9999">
+                    </div>
+                </div>
+                <div class="row full">
+                    <div>
+                        <label>Endereço</label>
+                        <input type="text" id="endereco" placeholder="Rua, Bairro, Cidade">
+                    </div>
+                </div>
+
+                <!-- VEÍCULO -->
+                <div class="section-header">🚗 DADOS DO VEÍCULO</div>
+                <div class="row">
+                    <div>
+                        <label>Placa *</label>
+                        <input type="text" id="placa" required placeholder="ABC-1234" maxlength="8" style="text-transform: uppercase;">
+                    </div>
+                    <div>
+                        <label>Modelo / Marca</label>
+                        <input type="text" id="modelo" placeholder="Ex: Fiat Palio">
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>KM Entrada</label>
+                        <input type="number" id="km" placeholder="000000">
+                    </div>
+                    <div>
+                        <label>Combustível</label>
+                        <select id="combustivel">
+                            <option value="Reserva">Reserva</option>
+                            <option value="1/4">1/4</option>
+                            <option value="Meio">Meio</option>
+                            <option value="3/4">3/4</option>
+                            <option value="Cheio">Cheio</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                     <div>
+                        <label>Data</label>
+                        <input type="date" id="data">
+                    </div>
+                </div>
+
+                <!-- ITENS DE VISTORIA -->
+                <div class="section-header">🔧 ITENS DE VISTORIA E ACESSÓRIOS</div>
+                
+                <label style="margin-bottom: 10px; display:block; color:var(--primary);">Marque o que o veículo possui:</label>
+                
+                <div class="checkbox-grid">
+                    <div class="cb-item"><input type="checkbox" name="item" value="Estepe" id="i1"><label for="i1">Estepe</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Macaco" id="i2"><label for="i2">Macaco</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Chave Roda" id="i3"><label for="i3">Chave Roda</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Triângulo" id="i4"><label for="i4">Triângulo</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Extintor" id="i5"><label for="i5">Extintor</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Som/Rádio" id="i6"><label for="i6">Som/Rádio</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Tapetes" id="i7"><label for="i7">Tapetes</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Antena" id="i8"><label for="i8">Antena</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Doc. Veículo" id="i9"><label for="i9">Doc. Veículo</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Ar Cond." id="i10"><label for="i10">Ar Cond.</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Vidro Elét." id="i11"><label for="i11">Vidro Elét.</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Trava Elét." id="i12"><label for="i12">Trava Elét.</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="Alarme" id="i13"><label for="i13">Alarme</label></div>
+                    <div class="cb-item"><input type="checkbox" name="item" value="G.N.V" id="i14"><label for="i14">G.N.V</label></div>
+                </div>
+
+                <!-- SERVIÇOS -->
+                <div class="section-header">📝 SERVIÇOS SOLICITADOS / OBS</div>
+                <div class="row full">
+                    <textarea id="obs" placeholder="Descreva os serviços a serem realizados ou observações sobre avarias..."></textarea>
+                </div>
+                
+                <div class="pdf-watermark">Documento gerado digitalmente via App Checklist Volpini</div>
+            </form>
+
+            <div class="actions-bar hide-on-pdf">
+                <button class="btn btn-primary" onclick="salvarChecklist()">💾 Salvar</button>
+                <button class="btn btn-success" id="btnPdf" onclick="gerarPDF()">📄 Baixar PDF</button>
+                <button class="btn btn-outline" onclick="limparTela()">🗑️ Limpar</button>
             </div>
-            <div class="col">
-                <label>Traseiros:</label>
-                <select>
-                    <option>Bons</option>
-                    <option>Meia Vida</option>
-                    <option>Ruins/Carecas</option>
-                </select>
-            </div>
         </div>
 
-        <!-- OBSERVAÇÕES -->
-        <div class="section-title">📝 Observações de Avarias</div>
-        <textarea rows="4" placeholder="Descreva aqui arranhões, amassados ou detalhes importantes..."></textarea>
-
-        <!-- ASSINATURA -->
-        <div class="section-title">✍️ Assinatura do Responsável</div>
-        <div class="signature-box">
-            <canvas id="sig-canvas" class="signature-canvas"></canvas>
-            <button class="clear-sig" onclick="limparAssinatura()">Limpar</button>
+        <!-- ABA: HISTÓRICO -->
+        <div id="historico" class="tab-content">
+            <div class="section-header">🗂️ CHECKLISTS SALVOS</div>
+            <div id="listaHistorico"></div>
+            <button class="btn btn-outline" style="width:100%; margin-top:20px;" onclick="limparHistorico()">Limpar Todo Histórico</button>
         </div>
-        <p style="font-size: 11px; text-align: center; color: #666; margin-top: 5px;">
-            Declaro que as informações acima são verdadeiras e conferem com o estado do veículo.
-        </p>
-
-    </div>
-
-    <!-- BOTÕES (Não saem no PDF) -->
-    <div class="actions" data-html2canvas-ignore="true">
-        <button class="btn-clear" onclick="limparTudo()">Limpar Tudo</button>
-        <button class="btn-pdf" onclick="gerarPDF()">
-            <span>📄</span> Gerar PDF
-        </button>
     </div>
 
     <script>
-        // 1. Configuração da Data Atual
-        document.getElementById('data').valueAsDate = new Date();
+        // --- INICIALIZAÇÃO ---
+        window.onload = () => {
+            document.getElementById('data').valueAsDate = new Date();
+            carregarHistorico();
+        };
 
-        // 2. Configuração da Assinatura (Canvas)
-        const canvas = document.getElementById('sig-canvas');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
+        // --- NAVEGAÇÃO ---
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
 
-        // Ajustar tamanho do canvas
-        function resizeCanvas() {
-            const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            canvas.width = canvas.offsetWidth * ratio;
-            canvas.height = canvas.offsetHeight * ratio;
-            ctx.scale(ratio, ratio);
+        // --- MENSAGENS ---
+        function showMsg(text, type = 'success') {
+            const el = document.getElementById('msgBox');
+            el.className = `alert alert-${type} show`;
+            el.textContent = text;
+            setTimeout(() => el.classList.remove('show'), 3000);
         }
-        window.onresize = resizeCanvas;
-        resizeCanvas();
 
-        // Eventos de Desenho (Mouse e Touch)
-        function startDraw(e) {
-            isDrawing = true;
-            ctx.beginPath();
-            const { x, y } = getPos(e);
-            ctx.moveTo(x, y);
-        }
-        function draw(e) {
-            if (!isDrawing) return;
-            const { x, y } = getPos(e);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        }
-        function stopDraw() { isDrawing = false; }
-        
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
+        // --- SALVAR LOCALMENTE ---
+        function salvarChecklist() {
+            const placa = document.getElementById('placa').value.toUpperCase();
+            const cliente = document.getElementById('nome').value;
+
+            if (!placa || !cliente) {
+                showMsg('Preencha Placa e Nome do Cliente!', 'error');
+                return false;
+            }
+
+            const checklist = {
+                id: Date.now(),
+                data: new Date().toLocaleString('pt-BR'),
+                placa, cliente,
+                modelo: document.getElementById('modelo').value,
+                telefone: document.getElementById('telefone').value,
+                endereco: document.getElementById('endereco').value,
+                km: document.getElementById('km').value,
+                combustivel: document.getElementById('combustivel').value,
+                obs: document.getElementById('obs').value,
+                itens: Array.from(document.querySelectorAll('input[name="item"]:checked')).map(cb => cb.value)
             };
+
+            const db = JSON.parse(localStorage.getItem('volpini_db') || '[]');
+            db.unshift(checklist);
+            localStorage.setItem('volpini_db', JSON.stringify(db));
+            
+            showMsg('Checklist Salvo com Sucesso!');
+            carregarHistorico();
+            return true;
         }
 
-        canvas.addEventListener('mousedown', startDraw);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDraw);
-        canvas.addEventListener('touchstart', startDraw);
-        canvas.addEventListener('touchmove', draw);
-        canvas.addEventListener('touchend', stopDraw);
-
-        function limparAssinatura() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        // 3. Função Gerar PDF (CORRIGIDA)
-        async function gerarPDF() {
-            const { jsPDF } = window.jspdf;
-            const elemento = document.getElementById('conteudo-vistoria');
-            const btn = document.querySelector('.btn-pdf');
-
-            // Feedback visual
-            const textoOriginal = btn.innerHTML;
-            btn.innerHTML = "⏳ Gerando...";
+        // --- GERAR PDF (CORRIGIDO PARA NÃO SAIR EM BRANCO) ---
+        function gerarPDF() {
+            // 1. Validação básica
+            const placa = document.getElementById('placa').value.toUpperCase() || 'SEM-PLACA';
+            
+            // 2. Prepara UI
+            const btn = document.getElementById('btnPdf');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Gerando...';
             btn.disabled = true;
 
-            try {
-                // Rola para o topo para evitar cortes
-                window.scrollTo(0, 0);
-                
-                // Aguarda um pouco para renderização (essencial para evitar tela branca)
-                await new Promise(resolve => setTimeout(resolve, 500));
+            // 3. Seleciona o container principal que tem o Header e o Form
+            const element = document.getElementById('appContainer');
+            
+            // 4. Configurações críticas para evitar páginas em branco
+            const opt = {
+                margin:       [0, 0, 0, 0], // Margem zero para aproveitar o papel
+                filename:     `CHECKLIST - ${placa}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { 
+                    scale: 2, 
+                    scrollY: 0,      // ESSENCIAL: Ignora a rolagem atual da tela
+                    useCORS: true    // Permite carregar a imagem da logo externa
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+            };
 
-                const canvas = await html2canvas(elemento, {
-                    scale: 2, // Melhor qualidade
-                    useCORS: true, // Evita erros de imagem
-                    logging: false,
-                    backgroundColor: '#ffffff',
-                    windowWidth: elemento.scrollWidth,
-                    windowHeight: elemento.scrollHeight
-                });
+            // 5. Adiciona classe para esconder botões temporariamente
+            document.body.classList.add('generating-pdf');
+            document.querySelectorAll('.hide-on-pdf').forEach(el => el.style.display = 'none');
+            document.querySelector('.pdf-watermark').style.display = 'block';
 
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                
-                // Nome do arquivo com Placa
-                const placa = document.getElementById('placa').value || 'Checklist';
-                pdf.save(`Vistoria_${placa}.pdf`);
-
-            } catch (error) {
-                alert('Erro ao gerar PDF: ' + error.message);
-                console.error(error);
-            } finally {
-                btn.innerHTML = textoOriginal;
+            // 6. Gera
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restaura UI
+                document.querySelectorAll('.hide-on-pdf').forEach(el => el.style.display = '');
+                document.querySelector('.pdf-watermark').style.display = 'none';
+                btn.innerHTML = originalText;
                 btn.disabled = false;
+                showMsg('PDF Baixado com sucesso!');
+            }).catch(err => {
+                console.error(err);
+                document.querySelectorAll('.hide-on-pdf').forEach(el => el.style.display = '');
+                document.querySelector('.pdf-watermark').style.display = 'none';
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showMsg('Erro ao gerar PDF', 'error');
+            });
+        }
+
+        // --- HISTÓRICO ---
+        function carregarHistorico() {
+            const db = JSON.parse(localStorage.getItem('volpini_db') || '[]');
+            const lista = document.getElementById('listaHistorico');
+            
+            if(db.length === 0) {
+                lista.innerHTML = '<div style="text-align:center; color:#999; padding:20px;">Nenhum checklist salvo.</div>';
+                return;
+            }
+
+            lista.innerHTML = db.map(item => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <h4>${item.placa} <small style="font-weight:400">| ${item.modelo}</small></h4>
+                        <span>📅 ${item.data}</span>
+                        <span>👤 ${item.cliente}</span>
+                    </div>
+                    <button class="btn btn-outline" style="min-width:auto; padding:5px 10px;" onclick="carregarItem(${item.id})">👁️ Ver</button>
+                </div>
+            `).join('');
+        }
+
+        function carregarItem(id) {
+            const db = JSON.parse(localStorage.getItem('volpini_db') || '[]');
+            const item = db.find(x => x.id === id);
+            if(!item) return;
+
+            document.getElementById('nome').value = item.cliente;
+            document.getElementById('placa').value = item.placa;
+            document.getElementById('modelo').value = item.modelo;
+            document.getElementById('telefone').value = item.telefone;
+            document.getElementById('endereco').value = item.endereco;
+            document.getElementById('km').value = item.km;
+            document.getElementById('combustivel').value = item.combustivel;
+            document.getElementById('obs').value = item.obs;
+            
+            // Limpa e marca checkboxes
+            document.querySelectorAll('input[name="item"]').forEach(cb => cb.checked = false);
+            if(item.itens) {
+                item.itens.forEach(val => {
+                    const cb = document.querySelector(`input[value="${val}"]`);
+                    if(cb) cb.checked = true;
+                });
+            }
+
+            switchTab('novo');
+            showMsg('Checklist carregado do histórico', 'success');
+            window.scrollTo(0,0);
+        }
+
+        function limparTela() {
+            if(confirm('Limpar o formulário atual?')) {
+                document.getElementById('checklistForm').reset();
+                document.getElementById('data').valueAsDate = new Date();
             }
         }
 
-        function limparTudo() {
-            if(confirm('Deseja limpar todos os campos?')) {
-                location.reload();
+        function limparHistorico() {
+            if(confirm('Apagar todo o histórico de checklists?')) {
+                localStorage.removeItem('volpini_db');
+                carregarHistorico();
+                showMsg('Histórico limpo.');
             }
         }
     </script>
 </body>
 </html>
-
