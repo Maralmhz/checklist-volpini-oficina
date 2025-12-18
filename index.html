@@ -6,8 +6,6 @@
     <meta name="theme-color" content="#001a33">
     <meta name="description" content="Checklist de Oficina Volpini - App Offline com PDF e WhatsApp">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/bbac6cb8-036e-4ce1-852d-e6c3397ecc20">
-    <link rel="icon" type="image/png" href="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/bbac6cb8-036e-4ce1-852d-e6c3397ecc20">
     <title>Checklist Volpini v3.1 PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -166,13 +164,11 @@
             font-weight: 700;
             margin-top: 25px;
             margin-bottom: 15px;
-            /* Evita que o título fique sozinho no final da página */
             page-break-after: avoid; 
         }
 
         .section-title:first-child { margin-top: 0; }
 
-        /* Evita quebra de página no meio de um grupo de formulário */
         .form-row, .equip-section {
             page-break-inside: avoid;
         }
@@ -441,7 +437,6 @@
             .header { padding: 15px; }
             .content { padding: 15px; }
             
-            /* Melhorias para evitar páginas em branco */
             .section-title { page-break-after: avoid; margin-top: 20px; }
             .equip-section, .form-row { page-break-inside: avoid; }
             .checkbox-group { page-break-inside: avoid; }
@@ -454,7 +449,7 @@
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                <img src="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/bbac6cb8-036e-4ce1-852d-e6c3397ecc20" alt="Logo Volpini">
+                <img src="logo.png" alt="Logo Volpini">
             </div>
             <div class="header-content">
                 <h1>CHECKLIST DE OFICINA</h1>
