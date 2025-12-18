@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#001a33">
-    <meta name="description" content="Checklist de Oficina Volpini - App Offline com PDF, Fotos e WhatsApp">
+    <meta name="description" content="Checklist de Oficina Volpini - App Offline com PDF e WhatsApp">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/bbac6cb8-036e-4ce1-852d-e6c3397ecc20">
     <link rel="icon" type="image/png" href="https://agi-prod-file-upload-public-main-use1.s3.amazonaws.com/bbac6cb8-036e-4ce1-852d-e6c3397ecc20">
-    <title>Checklist Volpini v3.0 PRO</title>
+    <title>Checklist Volpini v3.1 PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
@@ -166,9 +166,16 @@
             font-weight: 700;
             margin-top: 25px;
             margin-bottom: 15px;
+            /* Evita que o título fique sozinho no final da página */
+            page-break-after: avoid; 
         }
 
         .section-title:first-child { margin-top: 0; }
+
+        /* Evita quebra de página no meio de um grupo de formulário */
+        .form-row, .equip-section {
+            page-break-inside: avoid;
+        }
 
         .form-row {
             display: grid;
@@ -197,8 +204,6 @@
             font-family: inherit;
             transition: border-color 0.3s;
         }
-
-        input[type="file"] { cursor: pointer; }
 
         input[type="text"]:focus, input[type="date"]:focus, input[type="time"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="file"]:focus, select:focus, textarea:focus {
             outline: none;
@@ -249,70 +254,6 @@
             border-radius: 4px;
             border-left: 4px solid var(--color-primary);
         }
-
-        .photo-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .photo-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            cursor: pointer;
-        }
-
-        .photo-item img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            transition: transform 0.3s;
-        }
-
-        .photo-item:hover img { transform: scale(1.05); }
-
-        .photo-item .remove-photo {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--color-error);
-            color: white;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .photo-item:hover .remove-photo { display: flex; }
-
-        .upload-box {
-            border: 2px dashed var(--color-primary);
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        .upload-box:hover {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: var(--color-warning);
-        }
-
-        .upload-box input[type="file"] { display: none; }
-
-        .upload-icon { font-size: 40px; margin-bottom: 10px; }
-
-        .upload-text { color: var(--color-primary); font-weight: 600; }
 
         .checklist-item {
             background: #f9f9f9;
@@ -463,60 +404,6 @@
             border-radius: 4px;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.show { display: flex; }
-
-        .modal-content {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .modal-header {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--color-dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--color-text);
-            padding: 0;
-            width: auto;
-        }
-
-        .photo-preview {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
         .stats-box {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -545,7 +432,6 @@
             .action-buttons { flex-direction: column; }
             button { width: 100%; }
             .tabs { flex-wrap: wrap; }
-            .photo-gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
         }
 
         @media print {
@@ -553,6 +439,12 @@
             .container { box-shadow: none; max-width: 100%; }
             .tabs, .action-buttons, .header-badge { display: none; }
             .header { padding: 15px; }
+            .content { padding: 15px; }
+            
+            /* Melhorias para evitar páginas em branco */
+            .section-title { page-break-after: avoid; margin-top: 20px; }
+            .equip-section, .form-row { page-break-inside: avoid; }
+            .checkbox-group { page-break-inside: avoid; }
         }
 
         .hidden { display: none !important; }
@@ -566,7 +458,7 @@
             </div>
             <div class="header-content">
                 <h1>CHECKLIST DE OFICINA</h1>
-                <p>Inspeção e Serviços Automotivos - Volpini v3.0</p>
+                <p>Inspeção e Serviços Automotivos - Volpini v3.1</p>
                 <div class="contato-info">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="whatsapp-icon">
                     <span>(31) 99331-0800</span>
@@ -577,7 +469,7 @@
                     <span id="syncText">Online</span>
                 </div>
             </div>
-            <div class="header-badge">v3.0 PRO</div>
+            <div class="header-badge">v3.1 PRO</div>
         </div>
 
         <div class="tabs">
@@ -646,18 +538,6 @@
                         </div>
                     </div>
 
-                    <!-- FOTOS DO VEÍCULO -->
-                    <div class="section-title">📸 FOTOS DO VEÍCULO</div>
-
-                    <div class="upload-box" onclick="document.getElementById('fotosInput').click()">
-                        <div class="upload-icon">📷</div>
-                        <div class="upload-text">Clique para adicionar fotos</div>
-                        <div style="font-size: 12px; color: #666; margin-top: 5px;">Máximo 10 fotos por checklist</div>
-                        <input type="file" id="fotosInput" name="fotos" multiple accept="image/*">
-                    </div>
-
-                    <div id="photoGallery" class="photo-gallery"></div>
-
                     <!-- CARACTERÍSTICAS DO VEÍCULO -->
                     <div class="section-title">🚗 CARACTERÍSTICAS DO VEÍCULO</div>
 
@@ -683,19 +563,14 @@
                     </div>
 
                     <div class="equip-section">
-                        <div class="equip-section-title">🔊 ELETRÔNICOS</div>
+                        <div class="equip-section-title">🔊 ELETRÔNICOS / ELÉTRICOS</div>
                         <div class="checkbox-group">
+                            <div class="checkbox-item"><input type="checkbox" id="bateria" name="equipamentos" value="BATERIA"><label for="bateria">BATERIA</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="radio" name="equipamentos" value="RÁDIO / MULTIMÍDIA"><label for="radio">RÁDIO / MULTIMÍDIA</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="alarme_corta" name="equipamentos" value="ALARME / CORTA CORRENTE"><label for="alarme_corta">ALARME / CORTA CORRENTE</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="antena" name="equipamentos" value="ANTENA"><label for="antena">ANTENA</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="acendedor" name="equipamentos" value="ACENDEDOR/TOMADA 12V"><label for="acendedor">ACENDEDOR/TOMADA 12V</label></div>
-                        </div>
-                    </div>
-
-                    <div class="equip-section">
-                        <div class="equip-section-title">⚡ ELÉTRICOS</div>
-                        <div class="checkbox-group">
-                            <div class="checkbox-item"><input type="checkbox" id="vidro_eletrico" name="equipamentos" value="VIDRO ELÉTRICO"><label for="vidro_eletrico">VIDRO ELÉTRICO</label></div>
+                             <div class="checkbox-item"><input type="checkbox" id="vidro_eletrico" name="equipamentos" value="VIDRO ELÉTRICO"><label for="vidro_eletrico">VIDRO ELÉTRICO</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="trava_eletrica" name="equipamentos" value="TRAVA ELÉTRICA"><label for="trava_eletrica">TRAVA ELÉTRICA</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="buzina" name="equipamentos" value="BUZINA"><label for="buzina">BUZINA</label></div>
                         </div>
@@ -827,10 +702,6 @@
                         <div class="stat-label">Checklists Salvos</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="totalFotos">0</div>
-                        <div class="stat-label">Fotos Registradas</div>
-                    </div>
-                    <div class="stat-card">
                         <div class="stat-number" id="totalClientes">0</div>
                         <div class="stat-label">Clientes Diferentes</div>
                     </div>
@@ -851,26 +722,14 @@
         </div>
     </div>
 
-    <!-- MODAL DE VISUALIZAÇÃO -->
-    <div id="photoModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>Fotos do Checklist</span>
-                <button class="close-modal" onclick="fecharModal()">&times;</button>
-            </div>
-            <div id="photoModalContent"></div>
-        </div>
-    </div>
-
     <script>
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:application/javascript;base64,CmNvbnN0IENBQ0hFX05BTUUgPSAnY2hlY2tsaXN0LXYzLWNhY2hlJzsKY29uc3QgVVJMU19UT19DQUNIRSA9IFsKICAnLycsCiAgJy9pbmRleC5odG1sJwpdOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgKGV2ZW50KSA9PiB7CiAgY29uc3QgY2FjaGVPcGVuID0gY2FjaGVzLm9wZW4oQ0FDSEVfTkFNRSkudGhlbigCGNsaWVudCkgPT4gewogICAgcmV0dXJuIGNsaWVudC5hZGRBbGwoVVJMU19UT19DQUNIRSk7CiAgfSk7CiAgZXZlbnQud2FpdFVudGlsKChjYWNoZU9wZW4pOwo+CgpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2ZldGNoJywgKGV2ZW50KSA9PiB7CiAgZXZlbnQucmVzcG9uZFdpdGgoCiAgICBjYWNoZXMubWF0Y2goZXZlbnQucmVxdWVzdCkudGhlbigocmVzcG9uc2UpID0+IHsKICAgICAgaWYgKHJlc3BvbnNlKSB7CiAgICAgICAgcmV0dXJuIHJlc3BvbnNlOwogICAgICB9CiAgICAgIHJldHVybiBmZXRjaChldmVudC5yZXF1ZXN0KTsKICAgIH0pCiAgKTsK fSk7Cg==', { type: 'module' })
+            navigator.serviceWorker.register('data:application/javascript;base64,CmNvbnN0IENBQ0hFX05BTUUgPSAnY2hlY2tsaXN0LXYzLWNhY2hlJzsKY29uc3QgVVJMU19UT19DQUNIRSA9IFsKICAnLycsCiAgJy9pbmRleC5odG1sJwpdOwoKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgKGV2ZW50KSA9PiB7CiAgY29uc3QgY2FjaGVPcGVuID0gY2FjaGVzLm9wZW4oQ0FDSEVfTkFNRSkudGhlbigoY2xpZW50KSA9PiB7CiAgICByZXR1cm4gY2xpZW50LmFkZEFsbChVUkxTX1RPX0NBQ0hFKTsKICB9KTsKICBldmVudC53YWl0VW50aWwoKGNhY2hlT3BlbikpOwp9KTsKCnNlbGYuYWRkRXZlbnRMaXN0ZW5lcignZmV0Y2gnLCAoZXZlbnQpID0+IHsKICBldmVudC5yZXNwb25kV2l0aCgKICAgIGNhY2hlcy5tYXRjaChldmVudC5yZXF1ZXN0KS50aGVuKChyZXNwb25zZSkgPT4gewogICAgICBpZiAocmVzcG9uc2UpIHsKICAgICAgICByZXR1cm4gcmVzcG9uc2U7CiAgICAgIH0KICAgICAgcmV0dXJuIGZldGNoKGV2ZW50LnJlcXVlc3QpOwogICAgfSkKICApOwp9KTsK', { type: 'module' })
                 .catch(err => console.log('SW registration failed:', err));
         }
 
         // Variáveis globais
-        let fotosAtuais = [];
         let checklistsAtivos = [];
 
         // Monitor de conectividade
@@ -893,43 +752,6 @@
             
             if (tabName === 'historico') carregarHistorico();
             if (tabName === 'relatorios') carregarRelatorios();
-        }
-
-        // Upload de fotos
-        document.getElementById('fotosInput').addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            const maxFotos = 10;
-
-            if (fotosAtuais.length + files.length > maxFotos) {
-                mostrarAlerta('Máximo ' + maxFotos + ' fotos por checklist', 'error');
-                return;
-            }
-
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        fotosAtuais.push(event.target.result);
-                        renderizarFotos();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
-
-        function renderizarFotos() {
-            const gallery = document.getElementById('photoGallery');
-            gallery.innerHTML = fotosAtuais.map((foto, idx) => `
-                <div class="photo-item">
-                    <img src="${foto}" alt="Foto ${idx + 1}">
-                    <button class="remove-photo" onclick="removerFoto(${idx})">×</button>
-                </div>
-            `).join('');
-        }
-
-        function removerFoto(idx) {
-            fotosAtuais.splice(idx, 1);
-            renderizarFotos();
         }
 
         // Validar placa
@@ -972,7 +794,6 @@
                 celular_cliente: formData.get('celular_cliente'),
                 telefone2: formData.get('telefone2'),
                 servicos: formData.get('servicos'),
-                fotos: fotosAtuais,
                 equipamentos: Array.from(document.querySelectorAll('input[name="equipamentos"]:checked')).map(cb => cb.value),
                 caracteristicas: Array.from(document.querySelectorAll('input[name="caracteristicas"]:checked')).map(cb => cb.value),
                 cambio: Array.from(document.querySelectorAll('input[name="cambio"]:checked')).map(cb => cb.value),
@@ -1004,9 +825,6 @@
         // Limpar formulário
         function limparFormulario() {
             document.getElementById('checklistForm').reset();
-            fotosAtuais = [];
-            document.getElementById('photoGallery').innerHTML = '';
-            document.getElementById('fotosInput').value = '';
         }
 
         // Gerar PDF
@@ -1014,11 +832,12 @@
             const placa = document.getElementById('placa').value || 'checklist';
             const element = document.getElementById('checklistForm');
             const opt = {
-                margin: 10,
+                margin: 5,
                 filename: `checklist-${placa}-${new Date().getTime()}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
-                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
             html2pdf().set(opt).from(element).save();
             mostrarAlerta('📄 PDF gerado com sucesso!', 'success');
@@ -1074,12 +893,11 @@
                 <div class="checklist-item">
                     <div class="checklist-info">
                         <h4>🚗 ${c.placa} - ${c.modelo || 'N/A'}</h4>
-                        <p>👤 ${c.nome_cliente} | 📸 ${c.fotos?.length || 0} fotos</p>
+                        <p>👤 ${c.nome_cliente}</p>
                         <p>📅 ${c.dataCriacao}</p>
                     </div>
                     <div class="checklist-actions">
                         <button class="btn-secondary btn-small" onclick="visualizarChecklist(${c.id})">👁️ Ver</button>
-                        <button class="btn-warning btn-small" onclick="abrirFotos(${c.id})">📸 Fotos</button>
                         <button class="btn-danger btn-small" onclick="deletarChecklist(${c.id})">🗑️ Del</button>
                     </div>
                 </div>
@@ -1105,29 +923,54 @@
             const checklists = JSON.parse(localStorage.getItem('checklistsVolpini') || '[]');
             const checklist = checklists.find(c => c.id === id);
             if (checklist) {
-                console.log('Detalhes:', checklist);
-                mostrarAlerta('Checklist carregado. Veja o console para detalhes.', 'info');
-            }
-        }
+                // Preenche o formulário com os dados do histórico
+                document.getElementById('placa').value = checklist.placa || '';
+                document.getElementById('chassi').value = checklist.chassi || '';
+                document.getElementById('modelo').value = checklist.modelo || '';
+                document.getElementById('km_entrada').value = checklist.km_entrada || '';
+                document.getElementById('data').value = checklist.data || '';
+                document.getElementById('hora').value = checklist.hora || '';
+                document.getElementById('combustivel').value = checklist.combustivel || '';
+                document.getElementById('km_saida').value = checklist.km_saida || '';
+                document.getElementById('nome_cliente').value = checklist.nome_cliente || '';
+                document.getElementById('cpf_cnpj').value = checklist.cpf_cnpj || '';
+                document.getElementById('endereco_cliente').value = checklist.endereco_cliente || '';
+                document.getElementById('celular_cliente').value = checklist.celular_cliente || '';
+                document.getElementById('telefone2').value = checklist.telefone2 || '';
+                document.getElementById('servicos').value = checklist.servicos || '';
 
-        function abrirFotos(id) {
-            const checklists = JSON.parse(localStorage.getItem('checklistsVolpini') || '[]');
-            const checklist = checklists.find(c => c.id === id);
-            
-            if (checklist && checklist.fotos.length > 0) {
-                const modal = document.getElementById('photoModal');
-                const content = document.getElementById('photoModalContent');
-                content.innerHTML = checklist.fotos.map((foto, idx) => 
-                    `<div style="margin-bottom: 15px;"><img src="${foto}" class="photo-preview"></div>`
-                ).join('');
-                modal.classList.add('show');
-            } else {
-                mostrarAlerta('Nenhuma foto neste checklist.', 'warning');
-            }
-        }
+                // Limpa checkboxes
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
 
-        function fecharModal() {
-            document.getElementById('photoModal').classList.remove('show');
+                // Marca checkboxes salvos
+                if (checklist.equipamentos) {
+                    checklist.equipamentos.forEach(val => {
+                        const el = document.querySelector(`input[name="equipamentos"][value="${val}"]`);
+                        if (el) el.checked = true;
+                    });
+                }
+                if (checklist.caracteristicas) {
+                    checklist.caracteristicas.forEach(val => {
+                        const el = document.querySelector(`input[name="caracteristicas"][value="${val}"]`);
+                        if (el) el.checked = true;
+                    });
+                }
+                if (checklist.cambio) {
+                    checklist.cambio.forEach(val => {
+                        const el = document.querySelector(`input[name="cambio"][value="${val}"]`);
+                        if (el) el.checked = true;
+                    });
+                }
+                if (checklist.tracao) {
+                    checklist.tracao.forEach(val => {
+                        const el = document.querySelector(`input[name="tracao"][value="${val}"]`);
+                        if (el) el.checked = true;
+                    });
+                }
+
+                switchTab('novo-checklist');
+                mostrarAlerta('Dados carregados do histórico!', 'info');
+            }
         }
 
         function deletarChecklist(id) {
@@ -1145,7 +988,6 @@
             const checklists = JSON.parse(localStorage.getItem('checklistsVolpini') || '[]');
             
             document.getElementById('totalChecklists').textContent = checklists.length;
-            document.getElementById('totalFotos').textContent = checklists.reduce((sum, c) => sum + (c.fotos?.length || 0), 0);
             document.getElementById('totalClientes').textContent = new Set(checklists.map(c => c.nome_cliente)).size;
             document.getElementById('ultimoChecklist').textContent = checklists.length > 0 ? 
                 new Date(checklists[0].id).toLocaleDateString('pt-BR') : '--';
@@ -1201,11 +1043,6 @@
         window.addEventListener('load', () => {
             const data = new Date().toISOString().split('T')[0];
             document.getElementById('data').value = data;
-        });
-
-        // Fechar modal ao clicar fora
-        document.getElementById('photoModal')?.addEventListener('click', function(e) {
-            if (e.target === this) fecharModal();
         });
     </script>
 </body>
